@@ -13,21 +13,17 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class CustomizeErrorController implements ErrorController {
 
-    @Override
-    public String getErrorPath() {
-        return "error";
-    }
-
-    @RequestMapping(produces = MediaType.TEXT_HTML_VALUE)
-    public ModelAndView errorHtml(HttpServletRequest request, Model model) {
+    @RequestMapping("/error")
+    public String handleError(HttpServletRequest request, Model model){
         HttpStatus status = getStatus(request);
         if (status.is4xxClientError()) {
-            model.addAttribute("message", "请求错误！");
+            model.addAttribute("message", "4XX,请求错误！");
         }
         if (status.is5xxServerError()) {
-            model.addAttribute("message", "服务器错误！");
+            model.addAttribute("message", "5xx,服务器错误！");
         }
-        return new ModelAndView("error");
+        return "/error";
+
     }
 
     private HttpStatus getStatus(HttpServletRequest request) {
@@ -40,5 +36,10 @@ public class CustomizeErrorController implements ErrorController {
         } catch (Exception ex) {
             return HttpStatus.INTERNAL_SERVER_ERROR;
         }
+    }
+
+    @Override
+    public String getErrorPath() {
+        return "error";
     }
 }
