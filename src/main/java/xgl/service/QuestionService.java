@@ -8,6 +8,7 @@ import xgl.dto.PaginationDTO;
 import xgl.dto.QuestionDTO;
 import xgl.exception.CustomizeErrorCode;
 import xgl.exception.CustomizeException;
+import xgl.mapper.QuestionExtMapper;
 import xgl.mapper.QuestionMapper;
 import xgl.mapper.UserMapper;
 import xgl.model.Question;
@@ -25,6 +26,8 @@ public class QuestionService {
     private QuestionMapper questionMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private QuestionExtMapper questionExtMapper;
 
     //查询所有的问题
     public PaginationDTO list(Integer page, Integer size) {
@@ -153,5 +156,12 @@ public class QuestionService {
                 throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
             }
         }
+    }
+
+    public void incView(Integer id) {
+        Question question=new Question();
+        question.setId(id);
+        question.setViewCount(1);
+        questionExtMapper.incView(question);
     }
 }
