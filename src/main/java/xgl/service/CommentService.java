@@ -2,6 +2,7 @@ package xgl.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import xgl.enums.CommentTypeEnum;
 import xgl.exception.CustomizeErrorCode;
 import xgl.exception.CustomizeException;
@@ -21,6 +22,7 @@ public class CommentService {
     private QuestionMapper questionMapper;
     @Autowired
     private QuestionExtMapper questionExtMapper;
+    @Transactional //事务管理
     public void insert(Comment comment) {
         //处理评论时可能出现的异常(在服务层)
         if (comment.getParentId()==null || comment.getParentId()==0){
@@ -43,6 +45,7 @@ public class CommentService {
                 throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
             }
             commentMapper.insert(comment);
+            question.setCommentCount(1L);//递增，加1
             questionExtMapper.incCommentCount(question);
 
         }

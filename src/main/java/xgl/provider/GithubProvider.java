@@ -21,12 +21,16 @@ public class GithubProvider {
                 .url("https://github.com/login/oauth/access_token")
                 .post(body)
                 .build();
-        try (Response response = client.newCall(request).execute()) {
+        Response response = null;
+        try  {
+            response = client.newCall(request).execute();
             String string = response.body().string();
             String token = string.split("&")[0].split("=")[1];
             return token;
         } catch (IOException e) {
             e.printStackTrace();
+        }finally {
+            response.close();
         }
         return null;
     }
