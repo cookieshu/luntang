@@ -74,7 +74,7 @@ public class QuestionService {
     }
 
     //查询用户的问题
-    public PaginationDTO list(Integer userId, Integer page, Integer size) {
+    public PaginationDTO list(Long userId, Integer page, Integer size) {
         //返回的是page信息
         PaginationDTO paginationDTO = new PaginationDTO();
         QuestionExample questionExample=new QuestionExample();
@@ -121,7 +121,7 @@ public class QuestionService {
         return paginationDTO;
     }
 
-    public QuestionDTO getById(Integer id) {
+    public QuestionDTO getById(Long id) {
         QuestionDTO questionDTO = new QuestionDTO();
         Question question = questionMapper.selectByPrimaryKey(id);
         if (question==null){
@@ -141,6 +141,9 @@ public class QuestionService {
             //创建
             question.setGmtCreate(System.currentTimeMillis());
             question.setGmtModified(question.getGmtCreate());
+            question.setViewCount(0L);
+            question.setLikeCount(0L);
+            question.setCommentCount(0L);
             questionMapper.insert(question);
         }else {
             //更新
@@ -158,10 +161,10 @@ public class QuestionService {
         }
     }
 
-    public void incView(Integer id) {
+    public void incView(Long id) {
         Question question=new Question();
         question.setId(id);
-        question.setViewCount(1);
+        question.setViewCount(1L);
         questionExtMapper.incView(question);
     }
 }

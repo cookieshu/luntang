@@ -1,7 +1,9 @@
 package xgl.exception;
 
+//自定义异常类
 public class CustomizeException extends RuntimeException {
     private String message;
+    private Integer code;
 
     /**
      * 接收异常信息
@@ -9,17 +11,16 @@ public class CustomizeException extends RuntimeException {
      */
     public CustomizeException(ICustomizeErrorCode errorCode){
         this.message=errorCode.getMessage();
+        this.code=errorCode.getCode();
     }
 
-    /**
-     * 构造函数
-     * @param message
-     */
-    public CustomizeException(String message){
-        this.message=message;
-    }
+
     @Override
     public String getMessage(){
         return message;
+    }
+
+    public Integer getCode() {
+        return code;
     }
 }

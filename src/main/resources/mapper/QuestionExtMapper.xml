@@ -17,7 +17,14 @@
 
     UPDATE QUESTION
     SET
-    VIEW_COUNT=VIEW_COUNT + #{viewCount,jdbcType=INTEGER}
+    VIEW_COUNT=VIEW_COUNT + #{viewCount,jdbcType=LONG}
+    where id=#{id}
+  </update>
+  <!--评论数增加-->
+  <update id="incCommentCount" parameterType="xgl.model.Question">
+    UPDATE QUESTION
+    SET
+    COMMENT_COUNT=COMMENT_COUNT + #{viewCount,jdbcType=LONG}
     where id=#{id}
   </update>
 
