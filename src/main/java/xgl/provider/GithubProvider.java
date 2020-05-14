@@ -21,16 +21,12 @@ public class GithubProvider {
                 .url("https://github.com/login/oauth/access_token")
                 .post(body)
                 .build();
-        Response response = null;
-        try  {
-            response = client.newCall(request).execute();
+        try (Response response = client.newCall(request).execute()) {
             String string = response.body().string();
             String token = string.split("&")[0].split("=")[1];
             return token;
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
-            response.close();
         }
         return null;
     }
@@ -38,12 +34,10 @@ public class GithubProvider {
     public GithubUser getUser(String accessToken) {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
-                .url("https://api.github.com/user?access_token=71e66bec9a396b1c58aa8e5eaa88b62f96ca0fbd")
+                .url("https://api.github.com/user?access_token=2be766b8756d692ce88e645c8ca3ff6eacdb1b78")
                 .build();
-
-        Response response = null;
         try {
-            response = client.newCall(request).execute();
+            Response response = client.newCall(request).execute();
             String string = response.body().string();
             //把string对象转换为Java对象
             GithubUser githubUser = JSON.parseObject(string, GithubUser.class);
@@ -51,8 +45,6 @@ public class GithubProvider {
         } catch (Exception e) {
             System.out.println("有毛病！");
             e.printStackTrace();
-        } finally {
-            response.close();
         }
         return null;
     }

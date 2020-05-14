@@ -144,7 +144,7 @@ public class QuestionService {
             question.setViewCount(0L);
             question.setLikeCount(0L);
             question.setCommentCount(0L);
-            questionMapper.insert(question);
+            questionMapper.insertSelective(question);//使用insert需要id不为空
         }else {
             //更新
             Question updateQuestion=new Question();

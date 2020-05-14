@@ -9,6 +9,15 @@
     <script src="js/jquery-3.5.0.js"></script>
     <script src="js/bootstrap.js" type="application/javascript"></script>
 </head>
+<script type="application/javascript">
+    window.onload=function () {
+        var closable=window.localStorage.getItem("closable");
+        if(closable=="true"){
+            window.close();/*关闭页面*/
+            window.localStorage.removeItem("closable");
+        }
+    }
+</script>
 <body>
 <div th:insert="~{navigation::nav}"></div>
 <!--问题列表-->
