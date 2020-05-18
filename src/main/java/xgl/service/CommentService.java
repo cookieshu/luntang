@@ -31,26 +31,27 @@ public class CommentService {
     private QuestionExtMapper questionExtMapper;
     @Autowired
     private UserMapper userMapper;
+
     @Transactional //事务管理
     public void insert(Comment comment) {
         //处理评论时可能出现的异常(在服务层)
-        if (comment.getParentId()==null || comment.getParentId()==0){
+        if (comment.getParentId() == null || comment.getParentId() == 0) {
             throw new CustomizeException(CustomizeErrorCode.TARGET_PARAM_NOT_FOUND);
         }
-        if (comment.getType()==null || !CommentTypeEnum.isExist(comment.getType())){
+        if (comment.getType() == null || !CommentTypeEnum.isExist(comment.getType())) {
             throw new CustomizeException(CustomizeErrorCode.TYPE_PARAM_WRONG);
         }
-        if (comment.getType()==CommentTypeEnum.COMMRNT.getType()){//回复评论
+        if (comment.getType() == CommentTypeEnum.COMMRNT.getType()) {//回复评论
             //找到评论
             Comment dbcomment = commentMapper.selectByPrimaryKey(comment.getId());
-            if (dbcomment==null){
+            if (dbcomment == null) {
                 throw new CustomizeException(CustomizeErrorCode.COMMENT_NOT_FOUND);
             }
             commentMapper.insert(comment);//插入
-        }else {//回复问题
+        } else {//回复问题
             //找到该问题
             Question question = questionMapper.selectByPrimaryKey(comment.getParentId());
-            if (question==null){
+            if (question == null) {
                 throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
             }
             commentMapper.insert(comment);
@@ -62,31 +63,33 @@ public class CommentService {
     }
 
     public List<CommentDTO> listByQuestionId(Long id) {
-        CommentExample commentExample=new CommentExample();
+        CommentExample commentExample = new CommentExample();
         commentExample.createCriteria()
                 .andParentIdEqualTo(id)  //根据问题的id
                 .andTypeEqualTo(CommentTypeEnum.QUESTION.getType());//确定类型为问题
-        List<Comment> comments =commentMapper.selectByExample(commentExample);
-        if (comments.size()==0){
+        commentExample.setOrderByClause("gmt_create desc");//设置排序
+        List<Comment> comments = commentMapper.selectByExample(commentExample);
+
+        if (comments.size() == 0) {
             return new ArrayList<>();
         }
         //获取评论人，注意避免重复
         Set<Long> commentators = comments.stream().map(comment -> comment.getCommentator()).collect(Collectors.toSet());
-        List<Long> useIds=new ArrayList<>();
+        List<Long> useIds = new ArrayList<>();
         useIds.addAll(commentators);
 
         //获取评论人 并转为Map
-        UserExample userExample=new UserExample();
+        UserExample userExample = new UserExample();
         userExample.createCriteria().andIdIn(useIds);//In !!!
-        List<User>users=userMapper.selectByExample(userExample);
+        List<User> users = userMapper.selectByExample(userExample);
         //装换为Mapper，便于后期查找
-        Map<Long,User>userMap=users.stream().collect(Collectors.toMap(user->user.getId(),user->user));
+        Map<Long, User> userMap = users.stream().collect(Collectors.toMap(user -> user.getId(), user -> user));
 
         //转换commnet为commentDTO
-        List<CommentDTO> commentDTOS=comments.stream().map(
+        List<CommentDTO> commentDTOS = comments.stream().map(
                 comment -> {
-                    CommentDTO commentDTO=new CommentDTO();
-                    BeanUtils.copyProperties(comment,commentDTO);
+                    CommentDTO commentDTO = new CommentDTO();
+                    BeanUtils.copyProperties(comment, commentDTO);
                     //设置评论人
                     commentDTO.setUser(userMap.get(comment.getCommentator()));
                     return commentDTO;

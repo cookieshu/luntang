@@ -1,5 +1,6 @@
 package xgl.controller;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -7,7 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import xgl.dto.CommentCreateDTO;
+import xgl.dto.CommentDTO;
 import xgl.dto.ResultDTO;
+import xgl.exception.CustomizeErrorCode;
 import xgl.model.Comment;
 import xgl.model.User;
 import xgl.service.CommentService;
@@ -26,7 +29,11 @@ public class CommentController {
         //评论前需要登录
         User user=(User)request.getSession().getAttribute("user");
         if (user==null){
-            return ResultDTO.errorOf(2003,"未登录不能评论，请先登录！");
+            return ResultDTO.errorOf(CustomizeErrorCode.NO_LOGIN);
+        }
+        //校验提交的评论对象
+        if (commentCreateDTO==null || StringUtils.isBlank(commentCreateDTO.getContent())){
+            return ResultDTO.errorOf(CustomizeErrorCode.CONTENT_IS_EMPTY);
         }
 
         Comment comment=new Comment();
