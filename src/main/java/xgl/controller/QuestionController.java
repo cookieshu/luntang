@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import xgl.dto.CommentDTO;
 import xgl.dto.QuestionDTO;
+import xgl.enums.CommentTypeEnum;
 import xgl.service.CommentService;
 import xgl.service.QuestionService;
 
@@ -24,7 +25,7 @@ public class QuestionController {
                            Model model) {
 
         QuestionDTO questionDTO = questionService.getById(id);
-        List<CommentDTO> comments=commentService.listByQuestionId(id);
+        List<CommentDTO> comments=commentService.listByTargetId(id, CommentTypeEnum.QUESTION);
         //增加阅读数
         questionService.incView(id);
         model.addAttribute("question", questionDTO);

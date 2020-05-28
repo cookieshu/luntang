@@ -14,7 +14,6 @@
   </resultMap>
 <!--阅读数增加-->
   <update id="incView" parameterType="xgl.model.Question">
-
     UPDATE QUESTION
     SET
     VIEW_COUNT=VIEW_COUNT + #{viewCount,jdbcType=BIGINT}
@@ -24,7 +23,7 @@
   <update id="incCommentCount" parameterType="xgl.model.Question">
     UPDATE QUESTION
     SET
-    COMMENT_COUNT=COMMENT_COUNT + #{viewCount,jdbcType=BIGINT}
+    COMMENT_COUNT=COMMENT_COUNT + #{commentCount,jdbcType=BIGINT}
     where id=#{id}
   </update>
 

@@ -8,10 +8,7 @@ import xgl.dto.CommentDTO;
 import xgl.enums.CommentTypeEnum;
 import xgl.exception.CustomizeErrorCode;
 import xgl.exception.CustomizeException;
-import xgl.mapper.CommentMapper;
-import xgl.mapper.QuestionExtMapper;
-import xgl.mapper.QuestionMapper;
-import xgl.mapper.UserMapper;
+import xgl.mapper.*;
 import xgl.model.*;
 
 import java.util.ArrayList;
@@ -31,6 +28,8 @@ public class CommentService {
     private QuestionExtMapper questionExtMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private CommentExtMapper commentExtMapper;
 
     @Transactional //事务管理
     public void insert(Comment comment) {
@@ -43,30 +42,39 @@ public class CommentService {
         }
         if (comment.getType() == CommentTypeEnum.COMMRNT.getType()) {//回复评论
             //找到评论
-            Comment dbcomment = commentMapper.selectByPrimaryKey(comment.getId());
+            Comment dbcomment = commentMapper.selectByPrimaryKey(comment.getParentId());
             if (dbcomment == null) {
                 throw new CustomizeException(CustomizeErrorCode.COMMENT_NOT_FOUND);
             }
-            commentMapper.insert(comment);//插入
+            commentMapper.insertSelective(comment);//插入
+            //增加评论数
+            dbcomment.setCommentCount(1L);
+            commentExtMapper.incCommentCount(dbcomment);
         } else {//回复问题
             //找到该问题
             Question question = questionMapper.selectByPrimaryKey(comment.getParentId());
             if (question == null) {
                 throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
             }
-            commentMapper.insert(comment);
+            commentMapper.insertSelective(comment);
             question.setCommentCount(1L);//递增，加1
             questionExtMapper.incCommentCount(question);
-
         }
 
     }
 
-    public List<CommentDTO> listByQuestionId(Long id) {
+    /**
+     * 查询评论信息
+     *
+     * @param id
+     * @param type
+     * @return
+     */
+    public List<CommentDTO> listByTargetId(Long id, CommentTypeEnum type) {
         CommentExample commentExample = new CommentExample();
         commentExample.createCriteria()
                 .andParentIdEqualTo(id)  //根据问题的id
-                .andTypeEqualTo(CommentTypeEnum.QUESTION.getType());//确定类型为问题
+                .andTypeEqualTo(type.getType());//确定类型!!
         commentExample.setOrderByClause("gmt_create desc");//设置排序
         List<Comment> comments = commentMapper.selectByExample(commentExample);
 
@@ -96,4 +104,5 @@ public class CommentService {
                 }).collect(Collectors.toList());
         return commentDTOS;
     }
+
 }

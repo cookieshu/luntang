@@ -9,6 +9,7 @@
     <script src="/js/jquery-3.5.0.js"></script><!--在引进jQuery文件时，需要放在bootstrap前面，即：-->
     <script src="/js/bootstrap.js" type="application/javascript"></script>
     <script src="/js/luntang.js" type="application/javascript"></script>
+    <script src="/js/moment.js" type="application/javascript"></script>
 </head>
 <body>
 <div th:insert="~{navigation::nav}"></div>
@@ -37,7 +38,7 @@
 
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <!--回复列表-->
-                <h4 >
+                <h4>
                     <span th:text="${question.commentCount}"></span> 个回复
                 </h4>
                 <hr class="col-lg-12 col-md-12 col-sm-12 col-xs-12 comment-sp">
@@ -57,9 +58,25 @@
                             <div th:text="${comment.content}"></div>
                             <div class="menu">
                                 <span class="glyphicon glyphicon-thumbs-up icon"></span>
-                                <span class="glyphicon glyphicon-comment icon"></span>
+                                <span th:data-id="${comment.id}"
+                                      onclick="collapseComment(this)" class="comment-icon">
+                                <span class="glyphicon glyphicon-comment"></span>
+                                 <span th:text="${comment.commentCount}"></span>
+                                </span>
                                 <span class="pull-right"
                                       th:text="${#dates.format(question.gmtCreate,'yyyy-MM-dd')}"></span>
+                            </div>
+                            <!--二级评论-->
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 collapse sub-comments"
+                                 th:id="${'comment-'+comment.id}">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                    <input type="text" class="form-control" placeholder="评论一下..."
+                                           th:id="${'input-'+comment.id}">
+                                    <button type="button" class="btn btn-success pull-right"
+                                            onclick="comment(this)"
+                                            th:data-id="${comment.id}">评论
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>

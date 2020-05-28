@@ -49,6 +49,19 @@ body{
     margin-bottom: 15px;
     border-bottom: 1px solid #eee;
 }
+/*二级评论区样式*/
+.sub-comments{
+    border-radius: 5px;
+    margin-top: 10px;
+    border: 1px solid #eee;
+    padding-top: 15px;
+    margin-bottom: 15px;
+}
+/*二级评论区 回复按钮*/
+.sub-comments .btn{
+    margin: 10px 0;
+}
+
 .comment-sp{
     margin-top: 0;
 }
@@ -61,6 +74,17 @@ body{
     margin-right: 6px;
     font-size: 15px;
     cursor: pointer;
+}
+. menu .comment-icon{
+    font-size: 15px;
+    cursor:pointer;
+}
+.menu .comment-icon :hover{
+    color: #499ef3;
+}
+
+.menu .active{
+    color:#499ef3;
 }
 .menu .icon:hover{
     color: #499ef3;

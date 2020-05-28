@@ -3,19 +3,18 @@ package xgl.controller;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import xgl.dto.CommentCreateDTO;
 import xgl.dto.CommentDTO;
 import xgl.dto.ResultDTO;
+import xgl.enums.CommentTypeEnum;
 import xgl.exception.CustomizeErrorCode;
 import xgl.model.Comment;
 import xgl.model.User;
 import xgl.service.CommentService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @Controller
 public class CommentController {
@@ -42,11 +41,18 @@ public class CommentController {
         comment.setType(commentCreateDTO.getType());
         comment.setGmtCreate(System.currentTimeMillis());
         comment.setGmtModified(System.currentTimeMillis());
-        comment.setCommentator(1L);
+        comment.setCommentator(user.getId());
         comment.setLikeCount(0L);
         commentService.insert(comment);//增加评论
        //请求成功！
         return ResultDTO.okOf();
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/comment/{id}",method = RequestMethod.GET)
+    public ResultDTO comments(@PathVariable(name ="id" )Long id){
+        List<CommentDTO> commentDTOS = commentService.listByTargetId(id, CommentTypeEnum.COMMRNT);
+        return ResultDTO.okOf(commentDTOS);
     }
 
 }
