@@ -1,5 +1,6 @@
 package xgl.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,9 @@ import xgl.model.User;
 import xgl.model.UserExample;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class QuestionService {
@@ -69,7 +72,7 @@ public class QuestionService {
         }
 
         //把问题放入page
-        paginationDTO.setQuestions(questionDTOList);
+        paginationDTO.setData(questionDTOList);
         return paginationDTO;
     }
 
@@ -78,7 +81,7 @@ public class QuestionService {
         //返回的是page信息
         PaginationDTO paginationDTO = new PaginationDTO();
         QuestionExample questionExample=new QuestionExample();
-        questionExample.createCriteria().andIdEqualTo(userId);
+        questionExample.createCriteria().andCreatorEqualTo(userId);
         Integer totalCount = (int)questionMapper.countByExample(questionExample);
         Integer totalPage;//总页数
         //计算页数
@@ -116,7 +119,7 @@ public class QuestionService {
         }
 
         //把问题放入page
-        paginationDTO.setQuestions(questionDTOList);
+        paginationDTO.setData(questionDTOList);
 
         return paginationDTO;
     }
@@ -166,5 +169,26 @@ public class QuestionService {
         question.setId(id);
         question.setViewCount(1L);
         questionExtMapper.incView(question);
+    }
+
+    public List<QuestionDTO> selectRelated(QuestionDTO queryDTO) {
+        //校验数据
+        if (StringUtils.isBlank(queryDTO.getTag())){
+            return new ArrayList<>();
+        }
+        String[] tags = StringUtils.split(queryDTO.getTag(), ",");
+        //转换为正则表达式需要的格式：xx|xx|xx|
+        String regexpTag = Arrays.stream(tags).collect(Collectors.joining("|"));
+        Question question=new Question();
+        question.setId(queryDTO.getId());
+        question.setTag(regexpTag);
+
+        List<Question> questions = questionExtMapper.selectRelated(question);
+        List<QuestionDTO> questionDTOS = questions.stream().map(q -> {
+            QuestionDTO questionDTO = new QuestionDTO();
+            BeanUtils.copyProperties(q, questionDTO);//赋值
+            return questionDTO;//Question映射成QuestionDTO
+        }).collect(Collectors.toList());
+        return questionDTOS;
     }
 }

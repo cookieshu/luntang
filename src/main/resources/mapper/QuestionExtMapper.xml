@@ -26,5 +26,9 @@
     COMMENT_COUNT=COMMENT_COUNT + #{commentCount,jdbcType=BIGINT}
     where id=#{id}
   </update>
+  <!--查询相关问题-->
+  <select id="selectRelated" parameterType="xgl.model.Question" resultMap="BaseResultMap">
+    SELECT * from QUESTION WHERE id!=#{id} and tag regexp #{tag}
+  </select>
 
 </mapper>

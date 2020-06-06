@@ -102,3 +102,19 @@ function collapseComment(e) {
         });
     }
 }
+//显示标签框
+/*function showSelectTag() {
+    $("select-tag").show();失效，和luntang.css的 display: none;  冲突！
+}*/
+/*选择标签*/
+function selectTag(e){
+    var value=e.getAttribute("data-tag");
+    var previous=$("#tag").val();//先获取原有的值
+    if(previous.indexOf(value)==-1){//先判断value标签是否存在
+        if(previous){//previous不为空null
+            $("#tag").val(previous+','+value);
+        }else {
+            $("#tag").val(value);
+        }
+    }
+}

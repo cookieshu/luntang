@@ -41,8 +41,17 @@ body{
 .question-wechat{
     width: 40%;
 }
+.publish-tag-tab{
+    /*display: none;  隐藏 */
+    margin-top:10px;
+    padding-top: 10px;
+}
+.publish-tag-tab .label-info{
+    white-space: normal;
+    margin: 5px 5px;
+    display: inline-block;
+}
 .community-menu{
-    display: block;
     color: #999;
     font-size:13px;
     margin-bottom: 15px;

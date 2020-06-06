@@ -7,9 +7,9 @@ import java.util.List;
 //传递page分页数据
 
 @Data
-public class PaginationDTO {
+public class PaginationDTO<T> {
     //该页面的数据（问题）
-    private List<QuestionDTO> questions;
+    private List<T> data;
     private boolean showPrevious;//是否上一页
     private boolean showFirstPage;//是否第一页
     private boolean showNext;//下一页

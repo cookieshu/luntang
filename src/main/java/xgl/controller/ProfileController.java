@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import xgl.dto.PaginationDTO;
 import xgl.mapper.UserMapper;
+import xgl.model.Notification;
 import xgl.model.User;
+import xgl.service.NotificationService;
 import xgl.service.QuestionService;
 
 import javax.servlet.http.Cookie;
@@ -17,9 +19,11 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class ProfileController {
     @Autowired
-    UserMapper userMapper;
+    private UserMapper userMapper;
     @Autowired
-    QuestionService questionService;
+    private QuestionService questionService;
+    @Autowired
+    private NotificationService notificationService;
 
     @GetMapping("/profile/{action}")
     public String profile(@PathVariable(name = "action")String action,
@@ -35,15 +39,19 @@ public class ProfileController {
         }
         //设置页面的主题！
         if ("questions".equals(action)){
+            PaginationDTO paginationDTO = questionService.list(user.getId(), page, size);
             model.addAttribute("section","questions");
             model.addAttribute("sectionName","我的提问");
+            model.addAttribute("pagination",paginationDTO);
         }else if("replies".equals(action)){
+            PaginationDTO paginationDTO =notificationService.list(user.getId(), page, size);
+            Long unreadCount=notificationService.unreadCount(user.getId());
+            model.addAttribute("unreadCount",unreadCount);
             model.addAttribute("section","replies");
             model.addAttribute("sectionName","最新回复");
+            model.addAttribute("pagination",paginationDTO);
         }
         //查询到相关的问题
-        PaginationDTO paginationDTO = questionService.list(user.getId(), page, size);
-        model.addAttribute("pagination",paginationDTO);
         return "profile";
     }
 
