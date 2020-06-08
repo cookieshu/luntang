@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xgl.dto.PaginationDTO;
 import xgl.dto.QuestionDTO;
+import xgl.dto.QuestionQueryDTO;
 import xgl.exception.CustomizeErrorCode;
 import xgl.exception.CustomizeException;
 import xgl.mapper.QuestionExtMapper;
@@ -33,10 +34,17 @@ public class QuestionService {
     private QuestionExtMapper questionExtMapper;
 
     //查询所有的问题
-    public PaginationDTO list(Integer page, Integer size) {
+    public PaginationDTO list(String search,Integer page, Integer size) {
+        if (StringUtils.isNotBlank(search)){
+            String[] tags = StringUtils.split(search, " ");
+            search=Arrays.stream(tags).collect(Collectors.joining("|"));
+        }
         //返回的是page信息
         PaginationDTO paginationDTO = new PaginationDTO();
-        Integer totalCount = (int)questionMapper.countByExample(new QuestionExample());
+        QuestionQueryDTO questionQueryDTO=new QuestionQueryDTO();
+        questionQueryDTO.setSearch(search);
+        Integer totalCount = questionExtMapper.countBySearch(questionQueryDTO);
+
         Integer totalPage;//总页数
         //计算页数
         if (totalCount % size == 0) {
@@ -56,8 +64,9 @@ public class QuestionService {
         //offset是该页面开始的条数
         Integer offset = size * (page - 1);
         //根据offset和size查询内容
-        //mybatis的分页查询！
-        List<Question> questions = questionMapper.selectByExampleWithRowbounds(new QuestionExample(),new RowBounds(offset,size));
+        questionQueryDTO.setSize(size);
+        questionQueryDTO.setPage(offset);
+        List<Question> questions = questionExtMapper.selectBySearch(questionQueryDTO);
         List<QuestionDTO> questionDTOList = new ArrayList<>();
         //questions组装user
         for (Question question : questions) {
