@@ -1,5 +1,6 @@
 package xgl.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.UUID;
 
 @Controller
+@Slf4j  //追加日志信息
 public class AuthorizeController {
     //授权的信息
     @Autowired
@@ -60,6 +62,7 @@ public class AuthorizeController {
             response.addCookie(new Cookie("token",user.getToken()));
             return "redirect:/";
         }else{
+            log.error("callback get github error,{}",githubUser);//写日志！
            return  "redirect:/";
         }
     }
